@@ -1,7 +1,6 @@
 <?php
 /*
-Plugin Name: WebMaestro Settings
-Plugin URI: http://webmaestro.fr/wordpress-settings-api-options-pages/
+URI: http://webmaestro.fr/wordpress-settings-api-options-pages/
 Author: Etienne Baudry
 Author URI: http://webmaestro.fr
 Description: Simplified options system for WordPress. Generates a default page for settings.
@@ -9,7 +8,8 @@ Version: 1.2.3
 License: GNU General Public License
 License URI: license.txt
 Text Domain: wm-settings
-GitHub Plugin URI: https://github.com/WebMaestroFr/wm-settings
+GitHub Plugin URI: https://github.com/dmh-kevin/wm-settings
+Forked On: https://github.com/WebMaestroFr/wm-settings
 GitHub Branch: master
 */
 
@@ -26,7 +26,7 @@ class WM_Settings {
   public function __construct( $page = 'custom_settings', $title = null, $menu = array(), $settings = array(), $args = array() )
   {
     $this->page = $page;
-    $this->title = $title ? $title : __( 'Custom Settings', 'wm-settings' );
+    $this->title = $title ? $title : 'Custom Settings';
     $this->menu = is_array( $menu ) ? array_merge( array(
       'parent'     => 'themes.php',
       'title'      => $this->title,
@@ -36,8 +36,8 @@ class WM_Settings {
     ), $menu ) : false;
     $this->apply_settings( $settings );
     $this->args  = array_merge( array(
-      'submit' => __( 'Save Settings', 'wm-settings' ),
-      'reset'  => __( 'Reset Settings', 'wm-settings' )
+      'submit' => 'Save Settings',
+      'reset'  => 'Reset Settings'
     ), $args );
     add_action( 'admin_menu', array( $this, 'admin_menu' ) );
     add_action( 'admin_init', array( $this, 'admin_init' ) );
@@ -149,7 +149,7 @@ class WM_Settings {
     foreach ( $this->settings as $setting => $section ) {
       $_POST[$setting] = array_merge( $_POST[$setting], $this->get_defaults( $setting ) );
     }
-    add_settings_error( $this->page, 'settings_reset', __( 'Default settings have been reset.' ), 'updated' );
+    add_settings_error( $this->page, 'settings_reset', 'Default settings have been reset.' );
   }
 
   public function do_page()
@@ -167,7 +167,7 @@ class WM_Settings {
           settings_fields( $this->page );
           submit_button( $this->args['submit'], 'large primary' );
           if ( $this->args['reset'] ) {
-            submit_button( $this->args['reset'], 'small', "{$this->page}_reset", true, array( 'onclick' => "return confirm('" . __( 'Do you really want to reset all these settings to their default values ?', 'wm-settings' ) . "');" ) );
+            submit_button( $this->args['reset'], 'small', "{$this->page}_reset", true, array( 'onclick' => "return confirm('" . 'Do you really want to reset all these settings to their default values ?' . ")"));
           }
         }
       ?>
@@ -228,8 +228,8 @@ class WM_Settings {
         if ( $value ) {
           echo wp_get_attachment_image( $value, 'medium' );
         }
-        echo "<p><a class='button button-large wm-select-media' title='{$label}'>" . sprintf( __( 'Select %s', 'wm-settings' ), $label ) . "</a> ";
-        echo "<a class='button button-small wm-remove-media' title='{$label}'>" . sprintf( __( 'Remove %s', 'wm-settings' ), $label ) . "</a></p>{$desc}</fieldset>";
+        echo "<p><a class='button button-large wm-select-media' title='{$label}'>" . sprintf( 'Select %s', 'wm-settings' ) . "</a> ";
+        echo "<a class='button button-small wm-remove-media' title='{$label}'>" . sprintf( 'Remove %s', 'wm-settings' ) . "</a></p>{$desc}</fieldset>";
         break;
 
       case 'textarea':
