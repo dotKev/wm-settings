@@ -9,7 +9,7 @@ License: GNU General Public License
 License URI: license.txt
 Text Domain: wm-settings
 GitHub Plugin URI: https://github.com/dmh-kevin/wm-settings
-Forked On: https://github.com/WebMaestroFr/wm-settings
+Forked From: https://github.com/WebMaestroFr/wm-settings
 GitHub Branch: master
 */
 
@@ -203,7 +203,7 @@ class WM_Settings {
         break;
 
       case 'radio':
-        if ( ! $options ) { _e( 'No options defined.', 'wm-settings' ); }
+        if ( ! $options ) { 'No options defined.'; }
         echo "<fieldset id='{$id}'>";
         foreach ( $options as $v => $label ) {
           $check = checked( $v, $value, false );
@@ -214,7 +214,7 @@ class WM_Settings {
         break;
 
       case 'select':
-        if ( ! $options ) { _e( 'No options defined.', 'wm-settings' ); }
+        if ( ! $options ) { 'No options defined.'; }
         echo "<select {$attrs} id='{$id}'>";
         foreach ( $options as $v => $label ) {
           $select = selected( $v, $value, false );
@@ -237,7 +237,7 @@ class WM_Settings {
         break;
 
       case 'multi':
-        if ( ! $options ) { _e( 'No options defined.', 'wm-settings' ); }
+        if ( ! $options ) { 'No options defined.'; }
         echo "<fieldset id='{$id}'>";
         foreach ( $options as $n => $label ) {
           $a = preg_replace( "/name\=\'(.+)\'/", "name='$1[{$n}]'", $attrs );
@@ -249,7 +249,7 @@ class WM_Settings {
         break;
 
       case 'action':
-        if ( ! $action ) { _e( 'No action defined.', 'wm-settings' ); }
+        if ( ! $action ) { 'No action defined.'; }
         echo "<p class='wm-settings-action'><input {$attrs} id='{$id}' type='button' class='button button-large' value='{$label}' /></p>{$desc}";
         break;
 
