@@ -4,11 +4,9 @@ URI: http://webmaestro.fr/wordpress-settings-api-options-pages/
 Author: Etienne Baudry
 Author URI: http://webmaestro.fr
 Description: Simplified options system for WordPress. Generates a default page for settings.
-Version: 1.2.3
+Version: 1.2.3-b
 License: GNU General Public License
-License URI: license.txt
-Text Domain: wm-settings
-GitHub Plugin URI: https://github.com/dmh-kevin/wm-settings
+GitHub URI: https://github.com/dmh-kevin/wm-settings
 Forked From: https://github.com/WebMaestroFr/wm-settings
 GitHub Branch: master
 */
@@ -26,18 +24,22 @@ if ( ! class_exists( 'WM_Settings' ) ) {
     public function __construct( $page = 'custom_settings', $title = null, $menu = array(), $settings = array(), $args = array() ) {
       $this->page = $page;
       $this->title = $title ? $title : 'Custom Settings';
-      $this->menu = is_array( $menu ) ? array_merge( array(
+      $this->menu = is_array( $menu ) ? array_merge( 
+        array(
           'parent'     => 'themes.php',
           'title'      => $this->title,
           'capability' => 'manage_options',
           'icon_url'   => null,
-          'position'   => null
-        ), $menu ) : false;
+          'position'   => null,
+        ), 
+      $menu ) : false;
       $this->apply_settings( $settings );
-      $this->args  = array_merge( array(
+      $this->args  = array_merge( 
+        array(
           'submit' => 'Save Settings',
-          'reset'  => 'Reset Settings'
-        ), $args );
+          'reset'  => 'Reset Settings',
+        ), 
+      $args );
       add_action( 'admin_menu', array( $this, 'admin_menu' ) );
       add_action( 'admin_init', array( $this, 'admin_init' ) );
     }
@@ -47,10 +49,11 @@ if ( ! class_exists( 'WM_Settings' ) ) {
         $section = array_merge( array(
             'title'       => null,
             'description' => null,
-            'fields'      => array()
+            'fields'      => array(),
           ), $section );
         foreach ( $section['fields'] as $name => $field ) {
-          $field = array_merge( array(
+          $field = array_merge( 
+            array(
               'type'        => 'text',
               'label'       => null,
               'description' => null,
@@ -58,8 +61,10 @@ if ( ! class_exists( 'WM_Settings' ) ) {
               'sanitize'    => null,
               'attributes'  => array(),
               'options'     => null,
-              'action'      => null
-            ), $field );
+              'action'      => null,
+            ), 
+            $field ,
+          );
           if ( $field['type'] === 'action' && is_callable( $field['action'] ) ) {
             add_action( "wp_ajax_{$setting}_{$name}", $field['action'] );
           }
@@ -105,12 +110,15 @@ if ( ! class_exists( 'WM_Settings' ) ) {
           $values = self::get_setting( $setting );
           foreach ( $section['fields'] as $name => $field ) {
             $id = $setting . '_' . $name;
-            $field = array_merge( array(
+            $field = array_merge( 
+              array(
                 'id'    => $id,
                 'name'    => $setting . '[' . $name . ']',
                 'value'   => isset( $values[$name] ) ? $values[$name] : null,
                 'label_for' => $id
-              ), $field );
+              ), 
+              $field,
+            );
             add_settings_field( $name, $field['label'], array( __CLASS__, 'do_field' ), $this->page, $setting, $field );
           }
         }
@@ -129,12 +137,12 @@ if ( ! class_exists( 'WM_Settings' ) ) {
 
     public static function admin_enqueue_scripts() {
       wp_enqueue_media();
-      wp_enqueue_script( 'wm-settings', plugins_url( 'wm-settings.js' , __FILE__ ), array( 'jquery' ) );
+      wp_enqueue_script( 'wm-settings', 'wm-settings.js', array( 'jquery' ) );
       wp_localize_script( 'wm-settings', 'ajax', array(
           'url' => admin_url( 'admin-ajax.php' ),
           'spinner' => admin_url( 'images/spinner.gif' )
         ) );
-      wp_enqueue_style( 'wm-settings', plugins_url( 'wm-settings.css' , __FILE__ ) );
+      wp_enqueue_style( 'wm-settings', 'wm-settings.css' );
     }
 
     private function reset() {
