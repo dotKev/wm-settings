@@ -10,7 +10,6 @@ GitHub URI: https://github.com/dmh-kevin/wm-settings
 Forked From: https://github.com/WebMaestroFr/wm-settings
 GitHub Branch: master
 */
-
 if ( ! class_exists( 'WM_Settings' ) ) {
 
   class WM_Settings {
@@ -22,24 +21,25 @@ if ( ! class_exists( 'WM_Settings' ) ) {
     $empty = true;
 
     public function __construct( $page = 'custom_settings', $title = null, $menu = array(), $settings = array(), $args = array() ) {
-      $this->page = $page;
+      $this->page  = $page;
       $this->title = $title ? $title : 'Custom Settings';
-      $this->menu = is_array( $menu ) ? array_merge( 
+      $this->menu  = is_array( $menu ) ? array_merge(
         array(
           'parent'     => 'themes.php',
           'title'      => $this->title,
           'capability' => 'manage_options',
           'icon_url'   => null,
           'position'   => null,
-        ), 
-      $menu ) : false;
+        ),
+        $menu 
+      ) : false;
       $this->apply_settings( $settings );
-      $this->args  = array_merge( 
+      $this->args  = array_merge(
         array(
           'submit' => 'Save Settings',
           'reset'  => 'Reset Settings',
-        ), 
-      $args );
+        ),
+        $args );
       add_action( 'admin_menu', array( $this, 'admin_menu' ) );
       add_action( 'admin_init', array( $this, 'admin_init' ) );
     }
@@ -52,7 +52,7 @@ if ( ! class_exists( 'WM_Settings' ) ) {
             'fields'      => array(),
           ), $section );
         foreach ( $section['fields'] as $name => $field ) {
-          $field = array_merge( 
+          $field = array_merge(
             array(
               'type'        => 'text',
               'label'       => null,
@@ -62,8 +62,8 @@ if ( ! class_exists( 'WM_Settings' ) ) {
               'attributes'  => array(),
               'options'     => null,
               'action'      => null,
-            ), 
-            $field ,
+            ),
+            $field
           );
           if ( $field['type'] === 'action' && is_callable( $field['action'] ) ) {
             add_action( "wp_ajax_{$setting}_{$name}", $field['action'] );
@@ -110,14 +110,14 @@ if ( ! class_exists( 'WM_Settings' ) ) {
           $values = self::get_setting( $setting );
           foreach ( $section['fields'] as $name => $field ) {
             $id = $setting . '_' . $name;
-            $field = array_merge( 
+            $field = array_merge(
               array(
-                'id'    => $id,
-                'name'    => $setting . '[' . $name . ']',
-                'value'   => isset( $values[$name] ) ? $values[$name] : null,
-                'label_for' => $id
-              ), 
-              $field,
+                'id'        => $id,
+                'name'      => $setting . '[' . $name . ']',
+                'value'     => isset( $values[$name] ) ? $values[$name] : null,
+                'label_for' => $id,
+              ),
+              $field
             );
             add_settings_field( $name, $field['label'], array( __CLASS__, 'do_field' ), $this->page, $setting, $field );
           }
@@ -138,10 +138,14 @@ if ( ! class_exists( 'WM_Settings' ) ) {
     public static function admin_enqueue_scripts() {
       wp_enqueue_media();
       wp_enqueue_script( 'wm-settings', 'wm-settings.js', array( 'jquery' ) );
-      wp_localize_script( 'wm-settings', 'ajax', array(
+      wp_localize_script( 
+        'wm-settings', 
+        'ajax', 
+        array(
           'url' => admin_url( 'admin-ajax.php' ),
-          'spinner' => admin_url( 'images/spinner.gif' )
-        ) );
+          'spinner' => admin_url( 'images/spinner.gif' ),
+        )
+      );
       wp_enqueue_style( 'wm-settings', 'wm-settings.css' );
     }
 
@@ -154,7 +158,7 @@ if ( ! class_exists( 'WM_Settings' ) ) {
 
     public function do_page() { ?>
     <form action="options.php" method="POST" enctype="multipart/form-data" class="wrap">
-      <h2><?php echo $this->title; ?></h2>
+      <h2><?php echo esc_html($this->title); ?></h2>
       <?php
       // Avoid showing admin notice twice
       // TODO : Target the pages where it happens
@@ -176,9 +180,9 @@ if ( ! class_exists( 'WM_Settings' ) ) {
     public function do_section( $args ) {
       extract( $args );
       if ( $text = $this->settings[$id]['description'] ) {
-        echo wpautop( $text );
+        echo wp_filter_post_kses( ( wpautop( $text ) ) );
       }
-      echo "<input name='{$id}[{$this->page}_setting]' type='hidden' value='{$id}' />";
+      echo '<input name="' . esc_attr( $id . '[' . $this->page . '"_setting]"' ) .' type="hidden" value="' . esc_attr($id) . '" />"';
     }
 
     public static function do_field( $args ) {
@@ -194,19 +198,20 @@ if ( ! class_exists( 'WM_Settings' ) ) {
       case 'checkbox':
         $check = checked( 1, $value, false );
         echo "<label><input {$attrs} id='{$id}' type='checkbox' value='1' {$check} />";
-        if ( $description ) { echo " {$description}"; }
-        echo "</label>";
+        if ( $description ) { echo esc_html(" {$description}"); }
+        echo '</label>';
         break;
 
       case 'radio':
         if ( ! $options ) { 'No options defined.'; }
-        echo "<fieldset id='{$id}'>";
+        $output = "<fieldset id='{$id}'>";
         foreach ( $options as $v => $label ) {
           $check = checked( $v, $value, false );
           $options[$v] = "<label><input {$attrs} type='radio' value='{$v}' {$check} /> {$label}</label>";
         }
-        echo implode( '<br />', $options );
-        echo "{$desc}</fieldset>";
+        $output .= implode( '<br />', $options );
+        $output .= "{$desc}</fieldset>";
+        echo wp_filter_post_kses( $output );
         break;
 
       case 'select':
@@ -224,7 +229,7 @@ if ( ! class_exists( 'WM_Settings' ) ) {
         if ( $value ) {
           echo wp_get_attachment_image( $value, 'medium' );
         }
-        echo "<p><a class='button button-large wm-select-media' title='{$label}'>" . sprintf( 'Select %s', 'wm-settings' ) . "</a> ";
+        echo "<p><a class='button button-large wm-select-media' title='{$label}'>" . sprintf( 'Select %s', 'wm-settings' ) . '</a> ';
         echo "<a class='button button-small wm-remove-media' title='{$label}'>" . sprintf( 'Remove %s', 'wm-settings' ) . "</a></p>{$desc}</fieldset>";
         break;
 
@@ -281,8 +286,8 @@ if ( ! class_exists( 'WM_Settings' ) ) {
 
             case 'textarea':
               $text = '';
-              $nl = "WM-SETTINGS-NEW-LINE";
-              $tb = "WM-SETTINGS-TABULATION";
+              $nl = 'WM-SETTINGS-NEW-LINE';
+              $tb = 'WM-SETTINGS-TABULATION';
               $lines = explode( $nl, sanitize_text_field( str_replace( "\t", $tb, str_replace( "\n", $nl, $input ) ) ) );
               foreach ( $lines as $line ) {
                 $text .= str_replace( $tb, "\t", trim( $line ) ) . "\n";
