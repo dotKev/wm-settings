@@ -211,7 +211,7 @@ if ( ! class_exists( 'WM_Settings' ) ) {
 
       case 'radio':
         if ( ! $options ) {
-          'No options defined.';
+          echo 'No options defined.';
         }
         echo '<fieldset id="' . esc_attr( $id ) . '">';
         $first_key = key( $options );
@@ -227,7 +227,7 @@ if ( ! class_exists( 'WM_Settings' ) ) {
 
       case 'select':
         if ( ! $options ) {
-          'No options defined.';
+          echo 'No options defined.';
         }
         echo '<select name="' . esc_attr( $name ) . '" id="' . esc_attr( $id ) . '>"';
         foreach ( $options as $v => $label ) {
@@ -261,7 +261,7 @@ if ( ! class_exists( 'WM_Settings' ) ) {
 
       case 'multi':
         if ( ! $options ) {
-          'No options defined.';
+          echo 'No options defined.';
         }
         echo '<fieldset id="' . esc_attr( $id ) . '">';
         $first_key = key( $options );
@@ -277,7 +277,7 @@ if ( ! class_exists( 'WM_Settings' ) ) {
 
       case 'action':
         if ( ! $action ) {
-          'No action defined.';
+          echo 'No action defined.';
         }
         echo '<p class="wm-settings-action"><input name="' . esc_attr( $name ) . '" id="' . esc_attr( $id ) . '" type="button" class="button button-large" value="' . esc_attr( $label ) . '" /></p>';
         if ( false !== $description ):
