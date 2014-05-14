@@ -199,7 +199,7 @@ if ( ! class_exists( 'WM_Settings' ) ) {
       $action      = isset( $args['action'] ) ? $args['action'] : false;
       $description = isset( $args['description'] ) ? $args['description'] : false;
 
-      switch ( $args['type'] ) {
+      switch ( $type ) {
       case 'checkbox':
         $check = checked( 1, $value, false );
         echo '<label><input name="' . esc_attr( $name ) . '" id="' . esc_attr( $id ) . '" type="checkbox" value="1" ' . esc_attr( $check ) . '/>';
