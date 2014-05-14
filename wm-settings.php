@@ -31,26 +31,30 @@ if ( ! class_exists( 'WM_Settings' ) ) {
           'icon_url'   => null,
           'position'   => null,
         ),
-        $menu 
+        $menu
       ) : false;
       $this->apply_settings( $settings );
-      $this->args  = array_merge(
+      $this->args = array_merge(
         array(
           'submit' => 'Save Settings',
           'reset'  => 'Reset Settings',
         ),
-        $args );
+        $args 
+      );
       add_action( 'admin_menu', array( $this, 'admin_menu' ) );
       add_action( 'admin_init', array( $this, 'admin_init' ) );
     }
 
     public function apply_settings( $settings ) {
       foreach ( $settings as $setting => $section ) {
-        $section = array_merge( array(
+        $section = array_merge(
+          array(
             'title'       => null,
             'description' => null,
             'fields'      => array(),
-          ), $section );
+          ), 
+          $section 
+        );
         foreach ( $section['fields'] as $name => $field ) {
           $field = array_merge(
             array(
@@ -59,7 +63,6 @@ if ( ! class_exists( 'WM_Settings' ) ) {
               'description' => null,
               'default'     => null,
               'sanitize'    => null,
-              'attributes'  => array(),
               'options'     => null,
               'action'      => null,
             ),
@@ -109,7 +112,7 @@ if ( ! class_exists( 'WM_Settings' ) ) {
           $this->empty = false;
           $values = self::get_setting( $setting );
           foreach ( $section['fields'] as $name => $field ) {
-            $id = $setting . '_' . $name;
+            $id    = $setting . '_' . $name;
             $field = array_merge(
               array(
                 'id'        => $id,
@@ -138,9 +141,9 @@ if ( ! class_exists( 'WM_Settings' ) ) {
     public static function admin_enqueue_scripts() {
       wp_enqueue_media();
       wp_enqueue_script( 'wm-settings', plugin_dir_url( __FILE__ ) . 'wm-settings.js', array( 'jquery' ) );
-      wp_localize_script( 
-        'wm-settings', 
-        'ajax', 
+      wp_localize_script(
+        'wm-settings',
+        'ajax',
         array(
           'url' => admin_url( 'admin-ajax.php' ),
           'spinner' => admin_url( 'images/spinner.gif' ),
@@ -158,7 +161,7 @@ if ( ! class_exists( 'WM_Settings' ) ) {
 
     public function do_page() { ?>
     <form action="options.php" method="POST" enctype="multipart/form-data" class="wrap">
-      <h2><?php echo esc_html($this->title); ?></h2>
+      <h2><?php echo esc_html( $this->title ); ?></h2>
       <?php
       // Avoid showing admin notice twice
       // TODO : Target the pages where it happens
@@ -170,7 +173,7 @@ if ( ! class_exists( 'WM_Settings' ) ) {
         settings_fields( $this->page );
         submit_button( $this->args['submit'], 'large primary' );
         if ( $this->args['reset'] ) {
-          submit_button( $this->args['reset'], 'small', "{$this->page}_reset", true, array( 'onclick' => "return confirm('" . 'Do you really want to reset all these settings to their default values ?' . ")" ) );
+          submit_button( $this->args['reset'], 'small', $this->page . '_reset', true, array( 'onclick' => "return confirm('" . 'Do you really want to reset all these settings to their default values ?' . ')' ) );
         }
       }
 ?>
@@ -178,116 +181,119 @@ if ( ! class_exists( 'WM_Settings' ) ) {
   <?php }
 
     public function do_section( $args ) {
-      // extract( $args );
-      $id = isset($args['id']) ? $args['id'] : ''; 
+      $id = isset( $args['id'] ) ? $args['id'] : '';
 
       if ( $text = $this->settings[$id]['description'] ) {
-        echo wp_filter_post_kses( ( wpautop( $text ) ) );
+        echo esc_html( $text );
       }
-      echo '<input name="' . esc_html( $id . '[' . $this->page . '_setting]' ) .'" type="hidden" value="' . esc_attr($id) . '" />';
+      echo '<input name="' . esc_html( $id . '[' . $this->page . '_setting]' ) .'" type="hidden" value="' . esc_attr( $id ) . '" />';
     }
 
     public static function do_field( $args ) {
-      // extract( $args );
-      $name       = isset($args['name']) ? $args['name'] : '';
-      $attributes = isset($args['attributes']) ? $args['attributes'] : array();
-      $type       = isset($args['type']) ? $args['type'] : ''; 
-      $value      = isset($args['value']) ? $args['value'] : ''; 
-      $options    = isset($args['options']) ? $args['options'] : false; 
-      $id         = isset($args['id']) ? $args['id'] : ''; 
-      $label      = isset($args['label']) ? $args['label'] : ''; 
-      $action     = isset($args['action']) ? $args['action'] : false; 
-      
-      $attrs      = 'name="' . esc_attr($name) . '"';
-      foreach ( $args['attributes'] as $k => $v ) {
-        $k = sanitize_key( $k );
-        $v = esc_attr( $v );
-        $attrs .= " {$k}='{$v}'";
-      }
+      $name        = isset( $args['name'] ) ? $args['name'] : '';
+      $type        = isset( $args['type'] ) ? $args['type'] : '';
+      $value       = isset( $args['value'] ) ? $args['value'] : '';
+      $options     = isset( $args['options'] ) ? $args['options'] : false;
+      $id          = isset( $args['id'] ) ? $args['id'] : '';
+      $label       = isset( $args['label'] ) ? $args['label'] : '';
+      $action      = isset( $args['action'] ) ? $args['action'] : false;
+      $description = isset( $args['description'] ) ? $args['description'] : false;
+
       switch ( $args['type'] ) {
       case 'checkbox':
         $check = checked( 1, $value, false );
-        echo "<label><input {$attrs} id='{$id}' type='checkbox' value='1' {$check} />";
-        if ( $args['description'] ) { 
-          echo '<p class="description">' . esc_html($args['description']) . '</p>';
+        echo '<label><input name="' . esc_attr( $name ) . '" id="' . esc_attr( $id ) . '" type="checkbox" value="1" ' . esc_attr( $check ) . '/>';
+        if ( false !== $description ) {
+          echo '<p class="description">' . esc_html( $description ) . '</p>';
         }
         echo '</label>';
         break;
 
       case 'radio':
-        if ( ! $options ) { 
-          'No options defined.'; 
+        if ( ! $options ) {
+          'No options defined.';
         }
-        echo '<fieldset id="' . esc_attr($id) . '">';
-        $first_key = key($options);
+        echo '<fieldset id="' . esc_attr( $id ) . '">';
+        $first_key = key( $options );
         foreach ( $options as $v => $label ) {
-          if($v !== $first_key) echo '<br />';
-          $check = checked( $v, $value, false );
-          // VIP NOTE:  $attrs are explicitly sanitized above with sanitize_key and esc_attr 
-          echo '<label><input ' . $attrs . ' type="radio" value="' . esc_attr($v) . '" ' . esc_attr($check) . ' /> ' . esc_html($label) . '</label>';
+          if ( $v !== $first_key ) echo '<br />';
+          echo '<label><input name="' . esc_attr( $name ) . '" type="radio" value="' . esc_attr( $v ) . '" ' . checked( esc_attr( $v ), esc_attr( $value ), false ) . ' /> ' . esc_html( $label ) . '</label>';
         }
-        echo $args['description'] ? '<p class="description">' . esc_html($args['description']) . '</p>' : '';
+        if ( false !== $description ) :
+          echo '<p class="description">' . esc_html( $description ) . '</p>';
+        endif;
         echo '</fieldset>';
         break;
 
       case 'select':
-        if ( ! $options ) { 
-          'No options defined.'; 
+        if ( ! $options ) {
+          'No options defined.';
         }
-        echo "<select {$attrs} id='{$id}'>";
+        echo '<select name="' . esc_attr( $name ) . '" id="' . esc_attr( $id ) . '>"';
         foreach ( $options as $v => $label ) {
-          $select = selected( $v, $value, false );
-          echo "<option value='{$v}' {$select} />{$label}</option>";
+          echo '<option value="' . esc_attr( $v ) . '" ' . selected( esc_attr( $v ), esc_attr( $value ), false ) . ' />' . esc_html( $label ) . '</option>';
         }
         echo '</select>';
-        echo $args['description'] ? '<p class="description">' . esc_html($args['description']) . '</p>' : '';
+        if ( false !== $description ):
+          echo '<p class="description">' . esc_html( $description ) . '</p>';
+        endif;
         break;
 
       case 'media':
-        echo "<fieldset class='wm-settings-media' id='{$id}'><input {$attrs} type='hidden' value='{$value}' />";
+        echo '<fieldset class="wm-settings-media" id="' . esc_attr( $id ) . '"><input name="' . esc_attr( $name ) . '" type="hidden" value="' . esc_attr( $value ) . '" />';
         if ( $value ) {
           echo wp_get_attachment_image( $value, 'medium' );
         }
-        echo "<p><a class='button button-large wm-select-media' title='{$label}'>" . sprintf( 'Select %s', $label ) . '</a> ';
-        echo "<a class='button button-small wm-remove-media' title='{$label}'>" . sprintf( 'Remove %s', $label ) . "</a></p>";
-        echo $args['description'] ? '<p class="description">' . esc_html($args['description']) . '</p>' : '';
+        echo '<p><a class="button button-large wm-select-media" title="' . esc_attr( $label ) . '">Select  ' . esc_html( $label )  . '</a>';
+        echo '<a class="button button-small wm-remove-media" title="' . esc_attr( $label ) . '">Remove ' . esc_html( $label ) . '</a></p>';
+        if ( false !== $description ) :
+          echo '<p class="description">' . esc_html( $description ) . '</p>';
+        endif;
         echo '</fieldset>';
         break;
 
       case 'textarea':
-        echo "<textarea {$attrs} id='{$id}' class='large-text'>{$value}</textarea>";
-        echo $args['description'] ? '<p class="description">' . esc_html($args['description']) . '</p>' : '';
+        echo '<textarea name="' . esc_attr( $name ) . '" rows="5" id="' . esc_attr( $id ) . '" class="large-text">' . esc_attr( $value ) . '</textarea>';
+        if ( false !== $description ):
+          echo '<p class="description">' . esc_html( $description ) . '</p>';
+        endif;
         break;
 
       case 'multi':
-        if ( ! $options ) { 
-          'No options defined.'; 
+        if ( ! $options ) {
+          'No options defined.';
         }
-        echo "<fieldset id='{$id}'>";
+        echo '<fieldset id="' . esc_attr( $id ) . '">';
+        $first_key = key( $options );
         foreach ( $options as $n => $label ) {
-          $a = preg_replace( "/name\=\'(.+)\'/", "name='$1[{$n}]'", $attrs );
-          $check = checked( 1, $value[$n], false );
-          $options[$n] = "<label><input {$a} type='checkbox' value='1' {$check} /> {$label}</label>";
+          if ( $n !== $first_key ) echo '<br />';
+          echo '<label><input name="' . esc_attr( $name ) . '" type="checkbox" value="1" ' . checked( 1, esc_attr( $value[$n] ), false ) . ' /> ' . esc_html( $label ) . '</label>';
         }
-        echo implode( '<br />', $options );
-        echo $args['description'] ? '<p class="description">' . esc_html($args['description']) . '</p>' : '';
+        if ( false !== $description ) :
+          echo '<p class="description">' . esc_html( $description ) . '</p>';
+        endif;
         echo '</fieldset>';
         break;
 
       case 'action':
-        if ( ! $action ) { 
+        if ( ! $action ) {
           'No action defined.';
         }
-        echo "<p class='wm-settings-action'><input {$attrs} id='{$id}' type='button' class='button button-large' value='{$label}' /></p>";
-        echo $args['description'] ? '<p class="description">' . esc_html($args['description']) . '</p>' : '';
+        echo '<p class="wm-settings-action"><input name="' . esc_attr( $name ) . '" id="' . esc_attr( $id ) . '" type="button" class="button button-large" value="' . esc_attr( $label ) . '" /></p>';
+        if ( false !== $description ):
+          echo '<p class="description">' . esc_html( $description ) . '</p>';
+        endif;
         break;
+
       case 'divider':
         echo '<hr>';
         break;
+
       default:
-        $v = esc_attr( $value );
-        echo "<input {$attrs} id='{$id}' type='{$type}' value='{$v}' class='regular-text' />";
-        echo $args['description'] ? '<p class="description">' . esc_html($args['description']) . '</p>' : '';
+        echo '<input name="' . esc_attr( $name ) . '"  id="' . esc_attr( $id ) . '" type="' . esc_attr( $type ) . '" value="' . esc_attr( $value ) . '" class="regular-text" />';
+        if ( false !== $description ) :
+          echo '<p class="description">' . esc_html( $description ) . '</p>';
+        endif;
         break;
       }
     }
@@ -316,9 +322,9 @@ if ( ! class_exists( 'WM_Settings' ) ) {
               break;
 
             case 'textarea':
-              $text = '';
-              $nl = 'WM-SETTINGS-NEW-LINE';
-              $tb = 'WM-SETTINGS-TABULATION';
+              $text  = '';
+              $nl    = 'WM-SETTINGS-NEW-LINE';
+              $tb    = 'WM-SETTINGS-TABULATION';
               $lines = explode( $nl, sanitize_text_field( str_replace( "\t", $tb, str_replace( "\n", $nl, $input ) ) ) );
               foreach ( $lines as $line ) {
                 $text .= str_replace( $tb, "\t", trim( $line ) ) . "\n";
@@ -327,7 +333,9 @@ if ( ! class_exists( 'WM_Settings' ) ) {
               break;
 
             case 'multi':
-              if ( ! $input || empty( $field['options'] ) ) { break; }
+              if ( ! $input || empty( $field['options'] ) ) {
+                break;
+              }
               foreach ( $field['options'] as $n => $opt ) {
                 $input[$n] = empty( $input[$n] ) ? 0 : 1;
               }
@@ -387,5 +395,4 @@ if ( ! class_exists( 'WM_Settings' ) ) {
   function wm_create_settings_page( $page = 'custom_settings', $title = null, $menu = array(), $settings = array(), $args = array() ) {
     return new WM_Settings( $page, $title, $menu, $settings, $args );
   }
-
 }
