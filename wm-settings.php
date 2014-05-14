@@ -10,7 +10,7 @@ GitHub URI: https://github.com/dmh-kevin/wm-settings
 Forked From: https://github.com/WebMaestroFr/wm-settings
 GitHub Branch: master
 */
-if ( ! class_exists( 'WMƒ_Settings' ) ) {
+if ( ! class_exists( 'WM_Settings' ) ) {
 
   class WM_Settings {
 
