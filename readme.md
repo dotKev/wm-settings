@@ -1,25 +1,34 @@
 ## Synopsis
 
-Based on the WordPress Settings API, a class to generate options pages. Create settings forms with all basic input types, selects, textareas and media uploads.
+Based on the WordPress Settings API, a class to generate options pages. Create settings forms with all basic input types, selects, textareas and media uploads. 
+
+## About This Fork
+This fork strips out localization for WP VIP compliance and has lots of sanitation updates. Passes WP VIP code scanner. 
+
+*Attributes* field option has been removed to make it easier to to pass validation, and to make it easier to pass validation.
+
+
+![This image will self-destruct](http://31.media.tumblr.com/tumblr_lez9equyBX1qzh5ato1_500.gif "This image will self-destruct")
+**Remove the readme.md file for VIP.**
 
 ## Basic Example
 
 ```php
 $my_page = create_settings_page(
   'my_page_id',
-  __( 'My Page' ),
+  'My Page',
   array(
-    'title'   => __( 'My Menu' ),
+    'title'   => 'My Menu',
     'parent'  => 'themes.php' // As a submenu of "Appearance"
   ),
   array(
     'my_setting_id' => array(
-      'title'     => __( 'My Setting' ),
-      'description'   => __( 'This is my section description.' ),
+      'title'     => 'My Setting',
+      'description'   => 'This is my section description.',
       'fields'    => array(
         'my_option_name'    => array(
-          'label'         => __( 'My Option' ),
-          'description'   => __( 'This is my field description.' )
+          'label'         => 'My Option',
+          'description'   => 'This is my field description.' 
         )
       )
     )
@@ -27,7 +36,7 @@ $my_page = create_settings_page(
 );
 
 // Access the values
-$my_value = get_setting( 'my_setting_id', 'my_option_name' );
+$my_value = wm_get_setting( 'my_setting_id', 'my_option_name' );
 ```
 
 ## Motivation
