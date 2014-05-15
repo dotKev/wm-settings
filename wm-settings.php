@@ -3,7 +3,7 @@
 URI: http://webmaestro.fr/wordpress-settings-api-options-pages/
 Author: Etienne Baudry
 Author URI: http://webmaestro.fr
-Description: Simplified options system for WordPress. Settings are a whitelist for input/output validation
+Description: WordPress Settings API abstraction class. Settings are a whitelist for input/output validation
 Version: 1.2.3-b
 License: GNU General Public License
 GitHub URI: https://github.com/dmh-kevin/wm-settings
