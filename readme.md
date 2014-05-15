@@ -1,6 +1,6 @@
 ## Synopsis
 
-Based on the WordPress Settings API, a class to generate options pages. Create settings forms with all basic input types, selects, textareas and media uploads. 
+WordPress Settings API abstraction class. Create settings forms with all basic input types, selects, textareas and media uploads. 
 
 All settings are a whitelist for input/output validation.
 
