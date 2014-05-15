@@ -8,7 +8,7 @@ This fork strips out localization for WP VIP compliance and has lots of sanitati
 *Attributes* field option has been removed to make it easier to to pass validation, and to make it easier to pass validation.
 
 
-![This image will self-destruct](http://31.media.tumblr.com/tumblr_lez9equyBX1qzh5ato1_500.gif "This image will self-destruct")
+![This image will self-destruct](http://31.media.tumblr.com/tumblr_lez9equyBX1qzh5ato1_500.gif "This image will self-destruct") 
 **Remove the readme.md file for VIP.**
 
 ## Basic Example
