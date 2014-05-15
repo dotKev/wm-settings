@@ -3,7 +3,7 @@
 URI: http://webmaestro.fr/wordpress-settings-api-options-pages/
 Author: Etienne Baudry
 Author URI: http://webmaestro.fr
-Description: Simplified options system for WordPress.
+Description: Simplified options system for WordPress. Settings are a whitelist for input/output validation
 Version: 1.2.3-b
 License: GNU General Public License
 GitHub URI: https://github.com/dmh-kevin/wm-settings
@@ -140,7 +140,9 @@ if ( ! class_exists( 'WM_Settings' ) ) {
 
     public static function admin_enqueue_scripts() {
       wp_enqueue_media();
-      wp_enqueue_script( 'wm-settings', plugin_dir_url( __FILE__ ) . 'wm-settings.js', array( 'jquery' ) );
+      // for VIP, do not use __FILE__, use something like
+      // wp_enqueue_script( 'wm-settings', get_template_directory_uri() . '/inc/settings-class/wm-settings.js', array( 'jquery' ) );
+      wp_enqueue_script( 'wm-settings', plugins_url( 'wm-settings.js' , __FILE__ ), array( 'jquery' ) );
       wp_localize_script(
         'wm-settings',
         'ajax',
@@ -149,7 +151,9 @@ if ( ! class_exists( 'WM_Settings' ) ) {
           'spinner' => admin_url( 'images/spinner.gif' ),
         )
       );
-      wp_enqueue_style( 'wm-settings', plugin_dir_url( __FILE__ ) . 'wm-settings.css' );
+      // for VIP, do not use __FILE__, use something like
+      // wp_enqueue_style( 'wm-settings', get_template_directory_uri() . '/inc/settings-class/wm-settings.css' );
+      wp_enqueue_style( 'wm-settings', plugins_url( 'wm-settings.css' , __FILE__ ) );
     }
 
     private function reset() {
@@ -163,22 +167,22 @@ if ( ! class_exists( 'WM_Settings' ) ) {
     <form action="options.php" method="POST" enctype="multipart/form-data" class="wrap">
       <h2><?php echo esc_html( $this->title ); ?></h2>
       <?php
-      // Avoid showing admin notice twice
-      // TODO : Target the pages where it happens
-      if ( ! in_array( $this->menu['parent'], array( 'options-general.php' ) ) ) {
-        settings_errors();
-      }
-      do_settings_sections( $this->page );
-      if ( ! $this->empty ) {
-        settings_fields( $this->page );
-        submit_button( $this->args['submit'], 'large primary' );
-        if ( $this->args['reset'] ) {
-          submit_button( $this->args['reset'], 'small', $this->page . '_reset', true, array( 'onclick' => "return confirm('" . 'Do you really want to reset all these settings to their default values ?' . ')' ) );
+        // Avoid showing admin notice twice
+        // TODO : Target the pages where it happens
+        if ( ! in_array( $this->menu['parent'], array( 'options-general.php' ) ) ) {
+          settings_errors();
         }
-      }
-?>
+        do_settings_sections( $this->page );
+        if ( ! $this->empty ) {
+          settings_fields( $this->page );
+          submit_button( $this->args['submit'], 'large primary' );
+          if ( $this->args['reset'] ) {
+            submit_button( $this->args['reset'], 'small', $this->page . '_reset', true, array( 'onclick' => "return confirm('" . 'Do you really want to reset all these settings to their default values ?' . ')' ) );
+          }
+        }
+      ?>
     </form>
-  <?php }
+    <?php }
 
     public function do_section( $args ) {
       $id = isset( $args['id'] ) ? $args['id'] : '';
@@ -302,64 +306,67 @@ if ( ! class_exists( 'WM_Settings' ) ) {
       $values = array();
       if ( ! empty( $inputs["{$this->page}_setting"] ) ) {
         $setting = $inputs["{$this->page}_setting"];
+        // loops through defined settings fields, not the post array
+        // white-lists everything
         foreach ( $this->settings[$setting]['fields'] as $name => $field ) {
           $input = array_key_exists( $name, $inputs ) ? $inputs[$name] : null;
           if ( $field['sanitize'] ) {
             $values[$name] = call_user_func( $field['sanitize'], $input, $name );
           } else {
             switch ( $field['type'] ) {
-            case 'checkbox':
-              $values[$name] = $input ? 1 : 0;
-              break;
-
-            case 'radio':
-            case 'select':
-              $values[$name] = sanitize_key( $input );
-              break;
-
-            case 'media':
-              $values[$name] = absint( $input );
-              break;
-
-            case 'textarea':
-              $text  = '';
-              $nl    = 'WM-SETTINGS-NEW-LINE';
-              $tb    = 'WM-SETTINGS-TABULATION';
-              $lines = explode( $nl, sanitize_text_field( str_replace( "\t", $tb, str_replace( "\n", $nl, $input ) ) ) );
-              foreach ( $lines as $line ) {
-                $text .= str_replace( $tb, "\t", trim( $line ) ) . "\n";
-              }
-              $values[$name] = trim( $text );
-              break;
-
-            case 'multi':
-              if ( ! $input || empty( $field['options'] ) ) {
+              case 'checkbox':
+                $values[$name] = $input ? 1 : 0;
                 break;
-              }
-              foreach ( $field['options'] as $n => $opt ) {
-                $input[$n] = empty( $input[$n] ) ? 0 : 1;
-              }
-              $values[$name] = json_encode( $input );
-              break;
 
-            case 'action':
-              break;
+              case 'radio':
+              case 'select':
+                $values[$name] = sanitize_key( $input );
+                break;
 
-            case 'email':
-              $values[$name] = sanitize_email( $input );
-              break;
+              case 'media':
+                $values[$name] = absint( $input );
+                break;
 
-            case 'url':
-              $values[$name] = esc_url_raw( $input );
-              break;
+              case 'textarea':
+                $text  = '';
+                $nl    = 'WM-SETTINGS-NEW-LINE';
+                $tb    = 'WM-SETTINGS-TABULATION';
+                $lines = explode( $nl, sanitize_text_field( str_replace( "\t", $tb, str_replace( "\n", $nl, $input ) ) ) );
+                foreach ( $lines as $line ) {
+                  $text .= str_replace( $tb, "\t", trim( $line ) ) . "\n";
+                }
+                $values[$name] = trim( $text );
+                break;
 
-            case 'number':
-              $values[$name] = floatval( $input );
-              break;
+              case 'multi':
+                // only save boolean, based on any value
+                if ( ! $input || empty( $field['options'] ) ) {
+                  break;
+                }
+                foreach ( $field['options'] as $n => $opt ) {
+                  $input[$n] = empty( $input[$n] ) ? 0 : 1;
+                }
+                $values[$name] = json_encode( $input );
+                break;
 
-            default:
-              $values[$name] = sanitize_text_field( $input );
-              break;
+              case 'action':
+                break;
+
+              case 'email':
+                $values[$name] = sanitize_email( $input );
+                break;
+
+              case 'url':
+                $values[$name] = esc_url_raw( $input );
+                break;
+
+              case 'number':
+                $values[$name] = floatval( $input );
+                break;
+
+              default:
+                $values[$name] = sanitize_text_field( $input );
+                break;
             }
           }
         }
@@ -379,7 +386,10 @@ if ( ! class_exists( 'WM_Settings' ) ) {
         }
         return $setting;
       }
-      return $option ? false : $setting;
+      // either the option was not found, and $setting is false, so return false, 
+      // or the option is not an array, which shouldn't happen in this class, so return false. 
+      // return $option ? false : $setting;
+      return false;
     }
 
     private static function parse_multi( $result ) {
