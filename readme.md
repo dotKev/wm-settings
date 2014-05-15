@@ -2,10 +2,12 @@
 
 Based on the WordPress Settings API, a class to generate options pages. Create settings forms with all basic input types, selects, textareas and media uploads. 
 
+All settings are a whitelist for input/output validation.
+
 ## About This Fork
 This fork strips out localization for WP VIP compliance and has lots of sanitation updates and passes WP VIP code scanner. 
 
-*Attributes* field option has been removed to make it easier to to pass validation, and to make it easier to pass validation.
+*Attributes* field option has been removed to make it easier to to pass validation, and I'm not using it. :-)
 
 **Remove the readme.md file for VIP.**
 
