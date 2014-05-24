@@ -5,7 +5,7 @@ WordPress Settings API abstraction class. Create settings forms with all basic i
 All settings are a whitelist for input/output validation.
 
 ## About This Fork
-This fork strips out localization for WP VIP compliance and has lots of sanitation updates and passes WP VIP code scanner. 
+This fork strips out localization for WP VIP compliance, has lots of sanitation updates, and passes WP VIP code scanner. 
 
 *Attributes* field option has been removed to make it easier to to pass validation, and I'm not using it. :-)
 
